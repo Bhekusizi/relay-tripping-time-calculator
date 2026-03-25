@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free IDMT Relay Tripping Time Calculator – IEC 60255 &amp; IEEE C37.112 | SparkyCalc</title>
+  <meta name="description" content="Free IDMT overcurrent relay tripping time calculator for IEC 60255 and IEEE C37.112 curves. Calculate relay trip time, compare protection coordination with curve overlay, grading margin check, and generate professional PDF reports." />
+  <meta name="keywords" content="IDMT relay tripping time calculator, IEC 60255, IEEE C37.112, inverse definite minimum time, overcurrent relay, relay trip time, TMS calculator, protection relay, relay coordination, protection coordination, time current curve" />
+  <link rel="canonical" href="https://sparkycalc.com/relay-tripping-time-calculator/" />
+  <meta property="og:title" content="Free IDMT Relay Tripping Time Calculator – IEC 60255 &amp; IEEE C37.112 | SparkyCalc" />
+  <meta property="og:description" content="Free IDMT overcurrent relay trip time calculator with curve overlay, grading margin check, and PDF report generation. IEC 60255 and IEEE C37.112." />
+  <meta property="og:url" content="https://sparkycalc.com/relay-tripping-time-calculator/" />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"IDMT Relay Tripping Time Calculator","description":"Free IDMT overcurrent relay tripping time calculator for IEC 60255 and IEEE C37.112 protection curves. Features curve overlay comparison, grading margin check, CT ratio conversion, definite time high-set, and professional PDF report generation.","applicationCategory":"EngineeringApplication","operatingSystem":"Web","url":"https://sparkycalc.com/relay-tripping-time-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"AUD"},"provider":{"@type":"Organization","name":"SparkyCalc","url":"https://sparkycalc.com"},"featureList":"IEC 60255 curves, IEEE C37.112 curves, curve overlay comparison, grading margin check, CT ratio conversion, definite time high-set, PDF report generation, shareable URL state"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"SparkyCalc","item":"https://sparkycalc.com/"},{"@type":"ListItem","position":2,"name":"IDMT Relay Tripping Time Calculator","item":"https://sparkycalc.com/relay-tripping-time-calculator/"}]}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is an IDMT relay?","acceptedAnswer":{"@type":"Answer","text":"An IDMT (Inverse Definite Minimum Time) relay is a protection relay where the trip time is inversely proportional to the fault current — the higher the fault current, the faster it trips. They are widely used in low and medium voltage power systems to provide overcurrent protection and coordinate with other protective devices."}},{"@type":"Question","name":"What is TMS in a protection relay?","acceptedAnswer":{"@type":"Answer","text":"TMS stands for Time Multiplier Setting (IEC) and TD stands for Time Dial (IEEE). Both are scaling factors applied to the relay's trip time curve, allowing engineers to coordinate multiple relays in a protection scheme. A higher TMS/TD results in a longer trip time for a given fault current, creating discrimination between upstream and downstream relays."}},{"@type":"Question","name":"What is the difference between IEC 60255 and IEEE C37.112 curves?","acceptedAnswer":{"@type":"Answer","text":"IEC 60255 and IEEE C37.112 are different international standards defining inverse time overcurrent characteristics. IEC curves are used in Australia, the UK and Europe. IEEE curves are used primarily in North America. Both use different mathematical constants but achieve the same goal of time-current discrimination."}},{"@type":"Question","name":"What is relay pickup current?","acceptedAnswer":{"@type":"Answer","text":"The relay pickup current (Is) is the minimum fault current at which the relay will operate. The fault current must exceed the pickup current for the relay to trip. The ratio of fault current to pickup current (I/Is) is called the current multiple (M) and must be greater than 1 for the relay to operate."}},{"@type":"Question","name":"Which IEC relay curve should I use?","acceptedAnswer":{"@type":"Answer","text":"Standard Inverse is the most common general-purpose curve. Very Inverse suits overhead lines where fault current varies with distance. Extremely Inverse is ideal where the source impedance is high. Long Time Inverse suits motors and transformers with high inrush. Ultra Inverse provides the sharpest discrimination at high fault currents."}}]}
+  </script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg1:#1e2738;--bg2:#28334e;--bg3:#323f60;--bg4:#3c4b70;
+      --amber:#e8a838;--amber-l:#f0c060;--amber-dim:rgba(232,168,56,0.18);--amber-glow:rgba(232,168,56,0.10);
+      --text1:#ffffff;--text2:#cdd5e8;--text3:#adb8cf;
+      --info:#4a9eff;--info-dim:rgba(74,158,255,0.12);
+      --green:#3ecf8e;--green-dim:rgba(62,207,142,0.12);
+      --red:#f06060;--red-dim:rgba(240,96,96,0.12);
+      --warn:#f0a030;--warn-dim:rgba(240,160,48,0.12);
+      --purple:#a78bfa;
+      --border1:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+      --font-head:'Syne',sans-serif;--font-body:'Lora',serif;--font-mono:'DM Mono',monospace;
+      --r:14px;--r-sm:8px
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg1);color:var(--text2);font-family:var(--font-body);font-weight:500;font-size:15px;line-height:1.6;min-height:100vh}
+
+    /* ── Page header ── */
+    .page-header{background:var(--bg2);border-bottom:1px solid var(--border1);padding:20px 24px 18px}
+    .page-header-inner{max-width:1200px;margin:0 auto}
+    .page-header h1{font-family:var(--font-head);font-size:22px;font-weight:700;color:var(--text1);margin-bottom:6px}
+    .page-header p{font-size:14px;color:var(--text2);max-width:680px}
+    .page-header .standard-badges{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    .std-badge{font-family:var(--font-mono);font-size:11px;font-weight:500;padding:3px 9px;border-radius:5px;background:var(--amber-dim);color:var(--amber);border:1px solid rgba(232,168,56,0.25)}
+
+    /* ── Layout ── */
+    .shell{display:grid;grid-template-columns:380px 1fr;gap:16px;padding:20px 24px;max-width:1200px;margin:0 auto}
+    .main{display:flex;flex-direction:column;gap:16px}
+    .side{display:flex;flex-direction:column;gap:16px}
+
+    /* ── Cards ── */
+    .card{background:var(--bg2);border:1px solid var(--border1);border-radius:var(--r);overflow:hidden}
+    .card-head{background:var(--bg3);border-bottom:1px solid var(--border1);padding:11px 16px;display:flex;align-items:center;gap:10px}
+    .card-title{font-family:var(--font-head);font-size:13px;font-weight:600;color:var(--text1);letter-spacing:0.03em}
+    .card-body{padding:16px}
+    .seo-badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;background:var(--green-dim);color:var(--green);margin-left:auto}
+
+    /* ── Form fields ── */
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+    .field:last-child{margin-bottom:0}
+    .field label{font-family:var(--font-head);font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em}
+    .field select,.field input[type="number"]{width:100%;background:var(--bg3);border:1px solid var(--border1);border-left:3px solid var(--amber);border-radius:var(--r-sm);color:var(--text1);font-family:var(--font-mono);font-size:13px;font-weight:500;padding:9px 12px;outline:none;transition:border-color 0.15s,box-shadow 0.15s}
+    .field-text{width:100%;background:var(--bg3);border:1px solid var(--border1);border-left:3px solid var(--amber);border-radius:var(--r-sm);color:var(--text1);font-family:var(--font-mono);font-size:13px;font-weight:500;padding:9px 12px;outline:none;transition:border-color 0.15s,box-shadow 0.15s}
+    .field-text:focus{border-color:var(--border1);border-left-color:var(--amber);box-shadow:0 0 0 3px var(--amber-glow)}
+    .field-text::placeholder{color:var(--text3);opacity:0.6}
+    .field select:focus,.field input[type="number"]:focus{border-color:var(--border1);border-left-color:var(--amber);box-shadow:0 0 0 3px var(--amber-glow)}
+    .field input.input-err{border-color:var(--border1)!important;border-left-color:var(--red)!important;box-shadow:0 0 0 3px var(--red-dim)!important}
+    .field input.input-auto,.field select.input-auto{border-left-color:var(--green);color:var(--text2)}
+    .field input.input-auto:focus,.field select.input-auto:focus{border-left-color:var(--green);box-shadow:0 0 0 3px var(--green-dim)}
+    .field select option{background:var(--bg3)}
+    .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+    /* ── CT ratio ── */
+    .ct-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+    .ct-row input{width:80px!important;margin-bottom:0!important}
+    .ct-sep{font-family:var(--font-mono);font-size:14px;font-weight:500;color:var(--text3);padding:0 2px}
+    .ct-hint{font-family:var(--font-mono);font-size:10px;font-weight:500;color:var(--text3);margin-bottom:10px;min-height:14px}
+
+    /* ── TMS slider ── */
+    .tms-row{display:flex;align-items:center;gap:10px}
+    input[type="range"]{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:linear-gradient(to right,var(--amber) 0%,var(--amber) var(--pct,50%),var(--bg4) var(--pct,50%));outline:none;cursor:pointer}
+    input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--amber);cursor:pointer;border:2px solid var(--bg2)}
+    input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--amber);cursor:pointer;border:2px solid var(--bg2)}
+    .tms-input{width:72px!important;flex-shrink:0;margin-bottom:0!important}
+
+    /* ── Primary button ── */
+    .btn-calc{width:100%;padding:11px;background:var(--amber);color:#111827;font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:0.04em;border:none;border-radius:var(--r-sm);cursor:pointer;transition:background 0.15s,box-shadow 0.15s,transform 0.1s;margin-top:4px}
+    .btn-calc:hover{background:var(--amber-l);box-shadow:0 0 16px var(--amber-glow)}
+    .btn-calc:active{transform:scale(0.98)}
+
+    /* ── Secondary buttons ── */
+    .btn-row{display:flex;gap:8px;margin-top:8px}
+    .btn-secondary{flex:1;padding:9px;background:var(--bg3);color:var(--text2);font-family:var(--font-head);font-size:11px;font-weight:600;letter-spacing:0.03em;border:1px solid var(--border2);border-radius:var(--r-sm);cursor:pointer;transition:background 0.15s,color 0.15s}
+    .btn-secondary:hover{background:var(--bg4);color:var(--text1)}
+
+    /* ── Toggle switches ── */
+    .dt-toggle{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .dt-toggle label{margin-bottom:0;font-weight:500}
+    .switch{position:relative;width:36px;height:20px;flex-shrink:0}
+    .switch input{opacity:0;width:0;height:0}
+    .switch .slider{position:absolute;inset:0;background:var(--bg4);border-radius:10px;cursor:pointer;transition:background 0.2s}
+    .switch .slider::before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:var(--text3);border-radius:50%;transition:transform 0.2s,background 0.2s}
+    .switch input:checked+.slider{background:var(--amber)}
+    .switch input:checked+.slider::before{transform:translateX(16px);background:#111827}
+    .dt-fields{display:none;margin-bottom:12px}.dt-fields.show{display:block}
+
+    /* ── Overlay section ── */
+    .overlay-section{border-top:1px solid var(--border1);padding-top:14px;margin-top:6px}
+    .overlay-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+    .overlay-tag{font-family:var(--font-mono);font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.2)}
+
+    /* ── Result hero ── */
+    .result-hero{padding:16px 16px 14px;text-align:left}
+    .result-label{font-family:var(--font-head);font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px}
+    .result-num{font-family:var(--font-mono);font-size:36px;font-weight:600;color:var(--amber);line-height:1}
+    .result-unit{font-family:var(--font-mono);font-size:14px;font-weight:500;color:var(--text3);margin-left:4px}
+    .result-sub{font-family:var(--font-mono);font-size:11px;font-weight:500;color:var(--text3);margin-top:6px}
+
+    /* ── Metric cards ── */
+    .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:1px;background:var(--border1)}
+    .metric{background:var(--bg3);padding:12px 14px;border-left:3px solid var(--info)}
+    .metric:nth-child(2){border-left-color:var(--warn)}
+    .metric:nth-child(3){border-left-color:var(--green)}
+    .metric:nth-child(4){border-left-color:var(--purple)}
+    .metric-l{font-family:var(--font-head);font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px}
+    .metric-v{font-family:var(--font-mono);font-size:15px;font-weight:600;color:var(--text1)}
+
+    /* ── Calculation steps ── */
+    .steps{padding:14px 16px;border-top:1px solid var(--border1)}
+    .steps-title{font-family:var(--font-head);font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px}
+    .step-row{display:flex;flex-direction:column;padding:6px 0;border-bottom:1px solid var(--border1);font-size:12px}
+    .step-row:last-child{border-bottom:none}
+    .step-val{font-family:var(--font-mono);font-weight:600;color:var(--text1);margin-bottom:2px}
+    .step-expr{font-family:var(--font-mono);font-weight:500;color:var(--text3);font-size:11px}
+
+    /* ── Error box ── */
+    .err-box{padding:14px 16px;font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--red);background:var(--red-dim);border-left:3px solid var(--red)}
+
+    /* ── Grading margin ── */
+    .grading-box{padding:12px 16px;border-top:1px solid var(--border1);font-family:var(--font-mono);font-size:12px;font-weight:500}
+    .grading-pass{color:var(--green)}.grading-fail{color:var(--red)}.grading-na{color:var(--text3)}
+    .grading-title{font-family:var(--font-head);font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px}
+    .grading-row{display:flex;justify-content:space-between;padding:3px 0}
+
+    /* ── Chart ── */
+    .chart-wrap{position:relative;width:100%;height:300px}.chart-wrap canvas{cursor:crosshair}
+    .chart-legend{display:flex;gap:16px;flex-wrap:wrap;padding:10px 16px 14px;font-size:11px;font-family:var(--font-mono);font-weight:500;color:var(--text2)}
+    .leg-dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+
+    /* ── Tables ── */
+    .tbl{width:100%;border-collapse:collapse;font-size:11px}
+    .tbl thead th{background:var(--bg3);color:var(--text3);font-family:var(--font-head);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border1)}
+    .tbl tbody td{padding:6px 10px;border-bottom:1px solid var(--border1);font-family:var(--font-mono);font-size:11px;font-weight:500;color:var(--text2)}
+    .tbl tbody tr:last-child td{border-bottom:none}
+    .tbl tbody td:first-child{color:var(--text1);font-weight:600}
+
+    /* ── Formula cards ── */
+    .formula-display{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--text2);line-height:2}
+    .formula-display .formula-main{color:var(--amber-l);font-size:13px;font-weight:600;margin-bottom:8px}
+    .formula-display .formula-note{color:var(--text3)}
+
+    /* ── FAQ ── */
+    .faq-item{border-bottom:1px solid var(--border1);padding:12px 0}
+    .faq-item:first-child{padding-top:0}.faq-item:last-child{border-bottom:none;padding-bottom:0}
+    .faq-q{font-family:var(--font-head);font-size:12px;font-weight:600;color:var(--amber-l);margin-bottom:0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .faq-q::after{content:'+';font-size:16px;color:var(--text3);flex-shrink:0}
+    .faq-q.open::after{content:'\2212'}
+    .faq-a{font-size:12px;font-weight:500;color:var(--text2);line-height:1.6;display:none;margin-top:8px}.faq-a.open{display:block}
+
+    /* ── Toast ── */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);color:var(--green);border:1px solid rgba(62,207,142,0.25);font-family:var(--font-mono);font-size:12px;font-weight:500;padding:10px 20px;border-radius:var(--r-sm);opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;z-index:100}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* ── Responsive ── */
+    @media(max-width:900px){
+      .shell{grid-template-columns:1fr;padding:12px}
+      .fg{grid-template-columns:1fr}
+      .metrics{grid-template-columns:1fr 1fr}
+      .page-header{padding:16px}
+      .page-header h1{font-size:18px}
+      .chart-wrap{height:240px}
+      .result-num{font-size:30px}
+    }
+  </style>
+</head>
+<body>
+  <a href="#calculator" class="skip-link" style="position:absolute;top:-40px;left:0;background:var(--amber);color:#111827;padding:8px 16px;z-index:100;font-family:var(--font-head);font-size:13px;font-weight:600;transition:top 0.2s" onfocus="this.style.top='0'" onblur="this.style.top='-40px'">Skip to calculator</a>
+  <header class="page-header">
+    <div class="page-header-inner">
+    <h1>IDMT Relay Tripping Time Calculator</h1>
+    <p style="font-size:13px;color:var(--text2);margin-top:4px">Free overcurrent protection relay calculator for IEC 60255 and IEEE C37.112 curves with relay coordination and PDF reports.</p>
+    </div>
+  </header>
+  <main>
+  <article itemscope itemtype="https://schema.org/SoftwareApplication">
+    <meta itemprop="name" content="IDMT Relay Tripping Time Calculator" />
+    <meta itemprop="applicationCategory" content="EngineeringApplication" />
+    <meta itemprop="operatingSystem" content="Web Browser" />
+    <meta itemprop="url" content="https://sparkycalc.com/relay-tripping-time-calculator/" />
+    <div class="shell">
+      <div class="main">
+        <!-- Project info -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Project Information</span>
+          </div>
+          <div class="card-body">
+            <div class="fg">
+              <div class="field"><label for="proj-name">Project name</label><input type="text" id="proj-name" class="field-text" placeholder="e.g. Substation 42 Protection Study"></div>
+              <div class="field"><label for="proj-number">Project number</label><input type="text" id="proj-number" class="field-text" placeholder="e.g. PRJ-2026-001"></div>
+            </div>
+            <div class="fg">
+              <div class="field"><label for="proj-client">Client</label><input type="text" id="proj-client" class="field-text" placeholder="e.g. SA Power Networks"></div>
+              <div class="field"><label for="proj-engineer">Engineer</label><input type="text" id="proj-engineer" class="field-text" placeholder="e.g. J. Smith"></div>
+            </div>
+            <div class="fg">
+              <div class="field"><label for="proj-date">Date</label><input type="date" id="proj-date" class="field-text" style="width:200px"></div>
+              <div class="field"><label for="proj-notes">Notes / reference</label><input type="text" id="proj-notes" class="field-text" placeholder="e.g. Feeder 3 — downstream relay coordination"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculator inputs -->
+        <div class="card" id="calculator">
+          <div class="card-head">
+            
+            <span class="card-title">Relay 1 — Primary</span>
+          </div>
+          <div class="card-body">
+            <div class="field">
+              <label for="curve">Characteristic curve</label>
+              <select id="curve" name="curve" onchange="updateTmsControls();calc()">
+                <optgroup label="── IEC 60255 ──">
+                  <option value="iec_si">IEC Standard Inverse</option>
+                  <option value="iec_vi">IEC Very Inverse</option>
+                  <option value="iec_lti">IEC Long Time Inverse</option>
+                  <option value="iec_ei">IEC Extremely Inverse</option>
+                  <option value="iec_ui">IEC Ultra Inverse (non-standard)</option>
+                </optgroup>
+                <optgroup label="── IEEE C37.112 ──">
+                  <option value="ieee_mi">IEEE Moderately Inverse</option>
+                  <option value="ieee_vi">IEEE Very Inverse</option>
+                  <option value="ieee_ei">IEEE Extremely Inverse</option>
+                </optgroup>
+              </select>
+            </div>
+            <!-- CT Ratio -->
+            <div class="field"><label>CT ratio (optional)</label></div>
+            <div class="ct-row">
+              <input type="number" id="ct-pri" class="field" value="" min="1" step="any" placeholder="Pri" oninput="ctConvert()">
+              <span class="ct-sep">:</span>
+              <input type="number" id="ct-sec" class="field" value="" min="1" step="any" placeholder="Sec" oninput="ctConvert()">
+            </div>
+            <div class="ct-hint" id="ct-hint"></div>
+            <div class="fg">
+              <div class="field">
+                <label for="is">Relay pickup current (A)</label>
+                <input type="number" id="is" value="100" min="0.001" step="any" oninput="calc()">
+              </div>
+              <div class="field">
+                <label for="ifault">Fault current (A)</label>
+                <input type="number" id="ifault" value="500" min="0.001" step="any" oninput="calc()">
+              </div>
+            </div>
+            <div class="field">
+              <label for="tms-r" id="tms-label">Time multiplier setting (TMS)</label>
+              <div class="tms-row">
+                <input type="range" id="tms-r" min="0.05" max="1.0" step="0.05" value="0.5" oninput="syncTms('r')">
+                <input type="number" class="tms-input field" id="tms-n" value="0.5" min="0.05" max="15" step="0.05" oninput="syncTms('n')">
+              </div>
+            </div>
+            <!-- DT high-set -->
+            <div class="dt-toggle">
+              <label class="switch"><input type="checkbox" id="dt-enable" onchange="toggleDt();calc()"><span class="slider"></span></label>
+              <label for="dt-enable" style="cursor:pointer">Enable definite time high-set (50)</label>
+            </div>
+            <div class="dt-fields" id="dt-fields">
+              <div class="fg">
+                <div class="field"><label for="dt-pickup">DT pickup (A)</label><input type="number" id="dt-pickup" value="2000" min="0.001" step="any" oninput="calc()"></div>
+                <div class="field"><label for="dt-time">DT trip time (s)</label><input type="number" id="dt-time" value="0.1" min="0" step="any" oninput="calc()"></div>
+              </div>
+            </div>
+            <button class="btn-calc" onclick="calc()">Calculate Trip Time</button>
+            <!-- Overlay relay -->
+            <div class="overlay-section">
+              <div class="overlay-header">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <label class="switch"><input type="checkbox" id="overlay-enable" onchange="toggleOverlay();calc()"><span class="slider"></span></label>
+                  <span class="card-title" style="font-size:12px">Relay 2 — Overlay</span>
+                </div>
+                <span class="overlay-tag">Compare</span>
+              </div>
+              <div id="overlay-fields" style="display:none">
+                <div class="field">
+                  <label for="curve2">Overlay curve</label>
+                  <select id="curve2" onchange="calc()">
+                    <optgroup label="── IEC 60255 ──">
+                      <option value="iec_si">IEC Standard Inverse</option>
+                      <option value="iec_vi">IEC Very Inverse</option>
+                      <option value="iec_lti">IEC Long Time Inverse</option>
+                      <option value="iec_ei">IEC Extremely Inverse</option>
+                      <option value="iec_ui">IEC Ultra Inverse (non-standard)</option>
+                    </optgroup>
+                    <optgroup label="── IEEE C37.112 ──">
+                      <option value="ieee_mi">IEEE Moderately Inverse</option>
+                      <option value="ieee_vi">IEEE Very Inverse</option>
+                      <option value="ieee_ei">IEEE Extremely Inverse</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="fg">
+                  <div class="field"><label for="is2">Pickup current (A)</label><input type="number" id="is2" value="200" min="0.001" step="any" oninput="calc()"></div>
+                  <div class="field"><label for="tms2">TMS / TD</label><input type="number" id="tms2" value="0.3" min="0.05" max="15" step="0.05" oninput="calc()"></div>
+                </div>
+                <div class="field"><label for="grading-margin">Grading margin (s)</label><input type="number" id="grading-margin" value="0.4" min="0" max="2" step="0.05" oninput="calc()"></div>
+              </div>
+            </div>
+            <!-- Action buttons -->
+            <div class="btn-row">
+              <button class="btn-secondary" onclick="shareLink()" title="Copy shareable link">Share</button>
+              <button class="btn-secondary" onclick="exportResults()" title="Copy results to clipboard">Copy</button>
+              <button class="btn-secondary" onclick="printReport()" title="Generate PDF report">Print Report</button>
+              <button class="btn-secondary" onclick="resetAll()" title="Reset to defaults">Reset</button>
+            </div>
+          </div>
+        </div>
+        <!-- FAQ -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Frequently asked questions</span>
+            <span class="seo-badge">FAQ Schema</span>
+          </div>
+          <div class="card-body"><section>
+            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)" role="button" tabindex="0" aria-expanded="false"><span>What is an IDMT relay?</span></div><div class="faq-a"><p>An IDMT (Inverse Definite Minimum Time) relay is a protection relay where the trip time is inversely proportional to the fault current — the higher the fault current, the faster it trips. They are widely used in low and medium voltage power systems to provide overcurrent protection and coordinate with other protective devices.</p></div></div>
+            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)" role="button" tabindex="0" aria-expanded="false"><span>What is TMS in a protection relay?</span></div><div class="faq-a"><p>TMS stands for Time Multiplier Setting (IEC) and TD stands for Time Dial (IEEE). Both are scaling factors applied to the relay's trip time curve, allowing engineers to coordinate multiple relays in a protection scheme. A higher TMS/TD results in a longer trip time for a given fault current, creating discrimination between upstream and downstream relays.</p></div></div>
+            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)" role="button" tabindex="0" aria-expanded="false"><span>What is the difference between IEC 60255 and IEEE C37.112 curves?</span></div><div class="faq-a"><p>IEC 60255 and IEEE C37.112 are different international standards defining inverse time overcurrent characteristics. IEC curves are used in Australia, the UK and Europe. IEEE curves are used primarily in North America. Both use different mathematical constants (k/p for IEC, A/B/p for IEEE) but achieve the same goal of time-current discrimination.</p></div></div>
+            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)" role="button" tabindex="0" aria-expanded="false"><span>What is relay pickup current?</span></div><div class="faq-a"><p>The relay pickup current (Is) is the minimum fault current at which the relay will operate. The fault current must exceed the pickup current for the relay to trip. The ratio of fault current to pickup current (I/Is) is called the current multiple (M) and must be greater than 1 for the relay to operate.</p></div></div>
+            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)" role="button" tabindex="0" aria-expanded="false"><span>Which IEC relay curve should I use?</span></div><div class="faq-a"><p>Standard Inverse is the most common general-purpose curve. Very Inverse suits overhead lines where fault current varies with distance. Extremely Inverse is ideal where the source impedance is high. Long Time Inverse suits motors and transformers with high inrush. Ultra Inverse provides the sharpest discrimination at high fault currents.</p></div></div>
+          </section></div>
+        </div>
+      </div><!-- /.main -->
+
+      <aside class="side">
+        <!-- Result -->
+        <div class="card" id="result-card" style="display:none" role="region" aria-live="polite"><div id="result-inner"></div></div>
+        <!-- Chart -->
+        <div class="card">
+          <div class="card-head">
+            
+            <span class="card-title">Trip time vs fault current</span>
+          </div>
+          <div style="padding:14px 16px 0"><div class="chart-wrap"><canvas id="tripChart" role="img" aria-label="IDMT relay trip time curve showing trip time versus fault current on logarithmic axes"></canvas></div></div>
+          <div class="chart-legend" id="chart-legend">
+            <span><span class="leg-dot" style="background:#4a9eff"></span>Relay 1</span>
+            <span><span class="leg-dot" style="background:#f06060;border-radius:50%"></span>Operating point</span>
+          </div>
+          <div id="label-toggles" style="padding:0 16px 12px;display:none;gap:14px;flex-wrap:wrap;font-family:var(--font-mono);font-size:11px;color:var(--text3)">
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="show-label-1" checked onchange="updateLabels()" style="accent-color:var(--red)"> Relay 1 label</label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="show-label-2" checked onchange="updateLabels()" style="accent-color:var(--purple)"> Relay 2 label</label>
+          </div>
+        </div>
+        <!-- Reference tables -->
+        <div class="card"><div class="card-head"><span class="card-title">IEC 60255 constants</span></div>
+          <div class="card-body" style="padding:0"><table class="tbl"><thead><tr><th>Curve</th><th>k</th><th>p</th></tr></thead><tbody>
+            <tr><td>Std Inverse</td><td>0.14</td><td>0.02</td></tr>
+            <tr><td>Very Inverse</td><td>13.5</td><td>1</td></tr>
+            <tr><td>Long Time</td><td>120</td><td>1</td></tr>
+            <tr><td>Ext Inverse</td><td>80</td><td>2</td></tr>
+            <tr><td>Ultra Inverse*</td><td>315.2</td><td>2.5</td></tr>
+          </tbody></table><div style="padding:6px 10px 8px;font-size:10px;color:var(--text3);font-family:var(--font-mono)">* Non-standard (manufacturer-specific)</div></div>
+        </div>
+        <div class="card"><div class="card-head"><span class="card-title">IEEE C37.112 constants</span></div>
+          <div class="card-body" style="padding:0"><table class="tbl"><thead><tr><th>Curve</th><th>A</th><th>B</th><th>p</th></tr></thead><tbody>
+            <tr><td>Mod Inverse</td><td>0.0515</td><td>0.114</td><td>0.02</td></tr>
+            <tr><td>Very Inv.</td><td>19.61</td><td>0.491</td><td>2</td></tr>
+            <tr><td>Ext Inv.</td><td>28.2</td><td>0.1217</td><td>2</td></tr>
+          </tbody></table></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card"><div class="card-head"><span class="card-title">IEC formula</span></div>
+            <div class="card-body"><div class="formula-display"><div class="formula-main">t = ( k / ( M<sup>p</sup> &minus; 1 ) ) &times; TMS</div><div class="formula-note">M = I / I<sub>s</sub> &nbsp;(must be &gt; 1)</div></div></div>
+          </div>
+          <div class="card"><div class="card-head"><span class="card-title">IEEE formula</span></div>
+            <div class="card-body"><div class="formula-display"><div class="formula-main">t = ( A / ( M<sup>p</sup> &minus; 1 ) + B ) &times; TD</div><div class="formula-note">M = I / I<sub>s</sub> &nbsp;(must be &gt; 1)</div></div></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </article>
+  </main>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+  const CURVES={iec_si:{std:'IEC',name:'IEC Standard Inverse',k:0.14,p:0.02},iec_vi:{std:'IEC',name:'IEC Very Inverse',k:13.5,p:1},iec_lti:{std:'IEC',name:'IEC Long Time Inverse',k:120,p:1},iec_ei:{std:'IEC',name:'IEC Extremely Inverse',k:80,p:2},iec_ui:{std:'IEC',name:'IEC Ultra Inverse (non-standard)',k:315.2,p:2.5},ieee_mi:{std:'IEEE',name:'IEEE Moderately Inverse',A:0.0515,B:0.114,p:0.02},ieee_vi:{std:'IEEE',name:'IEEE Very Inverse',A:19.61,B:0.491,p:2},ieee_ei:{std:'IEEE',name:'IEEE Extremely Inverse',A:28.2,B:0.1217,p:2}};
+
+  function tripTime(key,Is,I,TMS){const c=CURVES[key],M=I/Is;if(M<=1)return null;if(c.std==='IEC')return(c.k/(Math.pow(M,c.p)-1))*TMS;return(c.A/(Math.pow(M,c.p)-1)+c.B)*TMS}
+
+  function effectiveTrip(key,Is,I,TMS,dtOn,dtP,dtT){
+    const idmt=tripTime(key,Is,I,TMS);
+    if(!dtOn||!dtP||I<dtP)return idmt;
+    if(idmt===null)return dtT;
+    return Math.min(idmt,dtT);
+  }
+
+  /* CT ratio */
+  function ctConvert(){
+    const pri=parseFloat($('ct-pri').value),sec=parseFloat($('ct-sec').value);
+    $('ct-hint').textContent=(pri>0&&sec>0)?`Ratio: ${(pri/sec).toFixed(1)}:1 · ${sec}A sec = ${pri}A pri`:'';
+  }
+
+  /* TMS controls */
+  function syncTms(src){const r=$('tms-r'),n=$('tms-n'),mx=parseFloat(r.max);if(src==='r')n.value=parseFloat(r.value).toFixed(2);else r.value=Math.min(mx,Math.max(0.05,parseFloat(n.value)||0.5));r.style.setProperty('--pct',((parseFloat(r.value)-0.05)/(mx-0.05)*100).toFixed(1)+'%');calc()}
+  function updateTmsControls(){const c=CURVES[$('curve').value],r=$('tms-r'),l=$('tms-label');if(c.std==='IEEE'){l.textContent='Time dial (TD)';r.max='15';r.step='0.5'}else{l.textContent='Time multiplier setting (TMS)';r.max='1.0';r.step='0.05'}const mx=parseFloat(r.max),n=$('tms-n');r.value=Math.min(mx,Math.max(0.05,parseFloat(n.value)||0.5));r.style.setProperty('--pct',((parseFloat(r.value)-0.05)/(mx-0.05)*100).toFixed(1)+'%')}
+
+  function toggleDt(){$('dt-fields').classList.toggle('show',$('dt-enable').checked)}
+  function toggleOverlay(){$('overlay-fields').style.display=$('overlay-enable').checked?'block':'none'}
+  function toggleFaq(el){const a=el.nextElementSibling,o=a.classList.toggle('open');el.classList.toggle('open',o);el.setAttribute('aria-expanded',o)}
+  document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('faq-q')){e.preventDefault();toggleFaq(e.target)}});
+
+  function $(id){return document.getElementById(id)}
+  function vf(id){const el=$(id),v=parseFloat(el.value),bad=isNaN(v)||v<=0;el.classList.toggle('input-err',bad);return bad?null:v}
+
+  /* Chart annotation plugin */
+  const annotPlugin={id:'opLabel',afterDraw(chart){if(!chart._opPts||!chart._opPts.length)return;const ctx=chart.ctx;ctx.font="600 11px 'DM Mono',monospace";const show1=$('show-label-1').checked,show2=$('show-label-2').checked;const visible=chart._opPts.filter(pt=>(pt.relay===1&&show1)||(pt.relay===2&&show2));const placed=[];visible.forEach(pt=>{const meta=chart.getDatasetMeta(pt.di);if(!meta.data[0])return;const p=meta.data[0];const tw=ctx.measureText(pt.lbl).width;const th=14;const positions=[{x:p.x+12,y:p.y-8,ax:'left'},{x:p.x-12,y:p.y-8,ax:'right'},{x:p.x+12,y:p.y-22,ax:'left'},{x:p.x+12,y:p.y+16,ax:'left'},{x:p.x-12,y:p.y-22,ax:'right'},{x:p.x-12,y:p.y+16,ax:'right'}];let best=positions[0];for(const pos of positions){const lx=pos.ax==='left'?pos.x:pos.x-tw;const rect={x:lx,y:pos.y-th,w:tw,h:th};const overlap=placed.some(r=>!(rect.x>r.x+r.w||rect.x+rect.w<r.x||rect.y>r.y+r.h||rect.y+rect.h<r.y));if(!overlap){best=pos;const bx=best.ax==='left'?best.x:best.x-tw;placed.push({x:bx,y:best.y-th,w:tw,h:th});break}}ctx.save();ctx.font="600 11px 'DM Mono',monospace";ctx.fillStyle=pt.col;ctx.textAlign=best.ax;ctx.fillText(pt.lbl,best.x,best.y);ctx.restore()})}};
+
+  /* Crosshair plugin — draws vertical line + per-curve value readout on hover */
+  const crosshairPlugin={id:'crosshair',
+    afterEvent(chart,args){
+      const e=args.event;
+      if(e.type==='mousemove'&&args.inChartArea){chart._crossX=e.x;chart._crossY=e.y;chart._crossShow=true}
+      else if(e.type==='mouseout'){chart._crossShow=false}
+      chart.draw();
+    },
+    afterDraw(chart){
+      if(!chart._crossShow)return;
+      const{ctx,chartArea:{left,right,top,bottom},scales:{x:xScale,y:yScale}}=chart;
+      const cx=chart._crossX,cy=chart._crossY;
+      if(cx<left||cx>right||cy<top||cy>bottom)return;
+      /* Vertical crosshair line */
+      ctx.save();
+      ctx.beginPath();ctx.moveTo(cx,top);ctx.lineTo(cx,bottom);
+      ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+      /* Horizontal crosshair line */
+      ctx.beginPath();ctx.moveTo(left,cy);ctx.lineTo(right,cy);
+      ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+      /* Get current value from mouse position */
+      const curI=xScale.getValueForPixel(cx);
+      const curT=yScale.getValueForPixel(cy);
+      /* Find closest point on each curve and draw dot + readout */
+      const curves=[{di:0,col:'#4a9eff',name:'R1'}];
+      if($('overlay-enable').checked)curves.push({di:chart.data.datasets.findIndex(d=>d.label==='Relay 2'),col:'#a78bfa',name:'R2'});
+      let yOff=0;
+      curves.forEach(cv=>{
+        if(cv.di<0)return;
+        const ds=chart.data.datasets[cv.di];if(!ds||!ds.data||!ds.data.length)return;
+        /* Binary search for closest x */
+        let closest=null,minDx=Infinity;
+        for(let i=0;i<ds.data.length;i++){
+          const dx=Math.abs(Math.log10(ds.data[i].x)-Math.log10(curI));
+          if(dx<minDx){minDx=dx;closest=ds.data[i]}
+        }
+        if(!closest)return;
+        const px=xScale.getPixelForValue(closest.x),py=yScale.getPixelForValue(closest.y);
+        /* Snap dot */
+        ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);ctx.fillStyle=cv.col;ctx.fill();
+        ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.strokeStyle=cv.col;ctx.lineWidth=1.5;ctx.stroke();
+      });
+      /* Readout box at cursor */
+      const readI=curI,readT=curT;
+      if(readI>0&&readT>0){
+        const txt=`${readI.toFixed(1)}A / ${readT.toFixed(3)}s`;
+        ctx.font="500 10px 'DM Mono',monospace";
+        const tw=ctx.measureText(txt).width;
+        const bx=cx+15,by=cy-20,bw=tw+12,bh=18;
+        const adjX=(bx+bw>right)?cx-15-bw:bx;
+        const adjY=(by<top)?cy+10:by;
+        ctx.fillStyle='rgba(50,63,96,0.92)';
+        ctx.beginPath();ctx.roundRect(adjX,adjY,bw,bh,4);ctx.fill();
+        ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;
+        ctx.beginPath();ctx.roundRect(adjX,adjY,bw,bh,4);ctx.stroke();
+        ctx.fillStyle='#ffffff';ctx.textAlign='left';ctx.textBaseline='middle';
+        ctx.fillText(txt,adjX+6,adjY+bh/2);
+      }
+      ctx.restore();
+    }
+  };
+  Chart.register(annotPlugin,crosshairPlugin);
+  function updateLabels(){if(chartInst)chartInst.update()}
+
+  let chartInst=null;
+  function genPts(key,Is,TMS,dtOn,dtP,dtT,faultI){
+    const pts=[];
+    const Mfault=faultI>0&&Is>0?faultI/Is:30;
+    const Mmax=Math.max(30,Mfault*1.2);
+    for(let i=0;i<=200;i++){
+      const lm=Math.log10(1.01)+(Math.log10(Mmax)-Math.log10(1.01))*i/200;
+      const M=Math.pow(10,lm),If=M*Is,t=effectiveTrip(key,Is,If,TMS,dtOn,dtP,dtT);
+      if(t!==null&&t>0&&t<1000)pts.push({x:If,y:t});
+    }
+    return pts;
+  }
+
+  function buildChart(key,Is,TMS,fI,dtOn,dtP,dtT){
+    const cv=$('tripChart');if(chartInst){chartInst.destroy();chartInst=null}
+    const p1=genPts(key,Is,TMS,dtOn,dtP,dtT,fI),fT=effectiveTrip(key,Is,fI,TMS,dtOn,dtP,dtT);
+    const s1=(fT&&fT>0&&fT<1000&&fI>Is)?[{x:fI,y:fT}]:[];
+    const ds=[{label:'Relay 1',data:p1,borderColor:'#4a9eff',borderWidth:2,pointRadius:0,showLine:true,tension:0.3,fill:false,order:2},{label:'Op point',data:s1,borderColor:'#f06060',backgroundColor:'#f06060',pointRadius:8,pointHoverRadius:10,showLine:false,order:1}];
+    const ops=[];if(s1.length)ops.push({di:1,col:'#f06060',lbl:`${fT.toFixed(3)}s @ ${fI}A`,relay:1});
+    let legH='<span><span class="leg-dot" style="background:#4a9eff"></span>Relay 1</span><span><span class="leg-dot" style="background:#f06060;border-radius:50%"></span>Operating point</span>';
+
+    if($('overlay-enable').checked){
+      const k2=$('curve2').value,Is2=parseFloat($('is2').value)||100,T2=parseFloat($('tms2').value)||0.5;
+      const p2=genPts(k2,Is2,T2,false,0,0,fI),fT2=effectiveTrip(k2,Is2,fI,T2,false,0,0);
+      const s2=(fT2&&fT2>0&&fT2<1000&&fI>Is2)?[{x:fI,y:fT2}]:[];
+      ds.push({label:'Relay 2',data:p2,borderColor:'#a78bfa',borderWidth:2,pointRadius:0,showLine:true,tension:0.3,fill:false,order:3,borderDash:[6,3]},{label:'R2 op',data:s2,borderColor:'#a78bfa',backgroundColor:'#a78bfa',pointRadius:7,pointHoverRadius:9,showLine:false,order:1});
+      if(s2.length)ops.push({di:3,col:'#a78bfa',lbl:`${fT2.toFixed(3)}s @ ${fI}A`,relay:2});
+      legH+='<span><span class="leg-dot" style="background:#a78bfa"></span>Relay 2</span>';
+    }
+    if(dtOn&&dtP>0){
+      ds.push({label:'DT',data:[{x:dtP,y:dtT},{x:dtP*100,y:dtT}],borderColor:'#f0c060',borderWidth:1.5,pointRadius:0,showLine:true,borderDash:[4,4],fill:false,order:4});
+      legH+='<span><span class="leg-dot" style="background:#f0c060"></span>DT high-set</span>';
+    }
+    $('chart-legend').innerHTML=legH;
+    $('label-toggles').style.display=$('overlay-enable').checked?'flex':'none';
+
+    chartInst=new Chart(cv,{type:'scatter',data:{datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'nearest',intersect:false},plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{type:'logarithmic',title:{display:true,text:'Fault current (A)',color:'#adb8cf',font:{size:11,family:"'DM Mono'"}},ticks:{color:'#adb8cf',font:{size:10,family:"'DM Mono'"},callback:v=>{const n=parseFloat(v);return[1,2,5,10,20,50,100,200,500,1000,2000,5000,10000].includes(n)?n:''}},grid:{color:'rgba(255,255,255,0.06)'},border:{color:'rgba(255,255,255,0.1)'}},y:{type:'logarithmic',title:{display:true,text:'Trip time (s)',color:'#adb8cf',font:{size:11,family:"'DM Mono'"}},ticks:{color:'#adb8cf',font:{size:10,family:"'DM Mono'"},callback:v=>{const n=parseFloat(v);return[0.01,0.02,0.05,0.1,0.2,0.5,1,2,5,10,20,50,100,200,500].includes(n)?n+'s':''}},grid:{color:'rgba(255,255,255,0.06)'},border:{color:'rgba(255,255,255,0.1)'}}}}});
+    chartInst._opPts=ops;
+  }
+
+  /* Main calc */
+  function calc(){
+    const key=$('curve').value,Is=vf('is'),I=vf('ifault'),TMS=vf('tms-n');
+    const r=$('tms-r'),mx=parseFloat(r.max);
+    if(TMS)r.style.setProperty('--pct',((Math.min(mx,Math.max(0.05,TMS))-0.05)/(mx-0.05)*100).toFixed(1)+'%');
+    const card=$('result-card'),inner=$('result-inner');
+    const dtOn=$('dt-enable').checked,dtP=parseFloat($('dt-pickup').value)||0,dtT=parseFloat($('dt-time').value)||0;
+
+    if(Is===null||I===null||TMS===null){card.style.display='block';inner.innerHTML='<div class="err-box">Enter valid positive values for all fields.</div>';return}
+    if(I<=Is){card.style.display='block';inner.innerHTML='<div class="err-box">Fault current must exceed pickup current (I &gt; I<sub>s</sub>) for relay operation.</div>';buildChart(key,Is,TMS,I,dtOn,dtP,dtT);return}
+
+    const c=CURVES[key],t=effectiveTrip(key,Is,I,TMS,dtOn,dtP,dtT),idmtT=tripTime(key,Is,I,TMS);
+    const M=I/Is,Mp=Math.pow(M,c.p),den=Mp-1,tdL=c.std==='IEEE'?'TD':'TMS';
+    const dtAct=dtOn&&dtP>0&&I>=dtP&&dtT<idmtT;
+
+    let steps=[];
+    if(c.std==='IEC'){steps=[{e:'M = I / Is',v:`${I} / ${Is} = ${M.toFixed(4)}`},{e:`M^p = ${M.toFixed(4)}^${c.p}`,v:Mp.toFixed(6)},{e:'M^p − 1',v:den.toFixed(6)},{e:`k / (M^p−1) = ${c.k} / ${den.toFixed(4)}`,v:(c.k/den).toFixed(6)},{e:`× TMS (${TMS})`,v:`= ${idmtT.toFixed(4)} s`}]}
+    else{const i2=c.A/den;steps=[{e:'M = I / Is',v:`${I} / ${Is} = ${M.toFixed(4)}`},{e:`M^p = ${M.toFixed(4)}^${c.p}`,v:Mp.toFixed(6)},{e:'M^p − 1',v:den.toFixed(6)},{e:`A / (M^p−1) = ${c.A} / ${den.toFixed(4)}`,v:i2.toFixed(6)},{e:`+ B (${c.B})`,v:(i2+c.B).toFixed(6)},{e:`× TD (${TMS})`,v:`= ${idmtT.toFixed(4)} s`}]}
+    if(dtAct)steps.push({e:`DT high-set active (I ≥ ${dtP}A)`,v:`= ${dtT.toFixed(4)} s`});
+
+    const sh=steps.map(s=>`<div class="step-row"><span class="step-val">${s.v}</span><span class="step-expr">${s.e}</span></div>`).join('');
+
+    /* Grading margin */
+    let gH='';
+    if($('overlay-enable').checked){
+      const k2=$('curve2').value,Is2=parseFloat($('is2').value)||100,T2=parseFloat($('tms2').value)||0.5,margin=parseFloat($('grading-margin').value)||0.4;
+      const t2=effectiveTrip(k2,Is2,I,T2,false,0,0);
+      if(t2!==null&&t!==null){
+        const diff=Math.abs(t2-t),pass=diff>=margin,ds=t2>t?'Relay 1':'Relay 2';
+        gH=`<div class="grading-box"><div class="grading-title">Grading margin check</div><div class="grading-row"><span>Relay 1 trip</span><span>${t.toFixed(3)} s</span></div><div class="grading-row"><span>Relay 2 trip</span><span>${t2.toFixed(3)} s</span></div><div class="grading-row"><span>Actual margin</span><span>${diff.toFixed(3)} s</span></div><div class="grading-row"><span>Required margin</span><span>${margin.toFixed(2)} s</span></div><div class="grading-row ${pass?'grading-pass':'grading-fail'}"><span>${pass?'PASS':'FAIL'} Coordination ${pass?'OK':'FAIL'}</span><span>${ds} trips first</span></div></div>`;
+      }else{gH='<div class="grading-box"><div class="grading-title">Grading margin check</div><div class="grading-na">Cannot check — fault current below one or both pickup settings.</div></div>'}
+    }
+
+    card.style.display='block';
+    inner.innerHTML=`<div class="result-hero"><div class="result-label">Calculated trip time${dtAct?' (DT limited)':''}</div><div><span class="result-num">${t.toFixed(3)}</span><span class="result-unit">s</span></div><div class="result-sub">${c.name} · ${tdL} ${TMS.toFixed(2)}${dtAct?' · DT '+dtT+'s':''}</div></div><div class="metrics"><div class="metric"><div class="metric-l">Pickup (Is)</div><div class="metric-v">${Is} A</div></div><div class="metric"><div class="metric-l">Fault (I)</div><div class="metric-v">${I} A</div></div><div class="metric"><div class="metric-l">Multiple (M)</div><div class="metric-v">${M.toFixed(2)}×</div></div><div class="metric"><div class="metric-l">IDMT time</div><div class="metric-v">${idmtT.toFixed(3)} s</div></div></div><div class="steps"><div class="steps-title">Calculation steps</div>${sh}</div>${gH}`;
+    buildChart(key,Is,TMS,I,dtOn,dtP,dtT);updateUrl();
+  }
+
+  /* URL state */
+  function updateUrl(){
+    try{
+      const p=new URLSearchParams();p.set('c',$('curve').value);p.set('is',$('is').value);p.set('i',$('ifault').value);p.set('tms',$('tms-n').value);
+      if($('dt-enable').checked){p.set('dt','1');p.set('dtp',$('dt-pickup').value);p.set('dtt',$('dt-time').value)}
+      if($('overlay-enable').checked){p.set('ov','1');p.set('c2',$('curve2').value);p.set('is2',$('is2').value);p.set('tms2',$('tms2').value);p.set('gm',$('grading-margin').value)}
+      const cp=$('ct-pri').value,cs=$('ct-sec').value;if(cp&&cs){p.set('ctp',cp);p.set('cts',cs)}
+      const pn=$('proj-name').value,pnum=$('proj-number').value,pc=$('proj-client').value,pe=$('proj-engineer').value,pd=$('proj-date').value;
+      if(pn)p.set('pn',pn);if(pnum)p.set('pnum',pnum);if(pc)p.set('pc',pc);if(pe)p.set('pe',pe);if(pd)p.set('pd',pd);const pnotes=$('proj-notes').value;if(pnotes)p.set('pnotes',pnotes);
+      history.replaceState(null,'','?'+p.toString());
+    }catch(e){}
+  }
+  function getShareUrl(){
+    const p=new URLSearchParams();p.set('c',$('curve').value);p.set('is',$('is').value);p.set('i',$('ifault').value);p.set('tms',$('tms-n').value);
+    if($('dt-enable').checked){p.set('dt','1');p.set('dtp',$('dt-pickup').value);p.set('dtt',$('dt-time').value)}
+    if($('overlay-enable').checked){p.set('ov','1');p.set('c2',$('curve2').value);p.set('is2',$('is2').value);p.set('tms2',$('tms2').value);p.set('gm',$('grading-margin').value)}
+    const cp=$('ct-pri').value,cs=$('ct-sec').value;if(cp&&cs){p.set('ctp',cp);p.set('cts',cs)}
+    const pn=$('proj-name').value,pnum=$('proj-number').value,pc=$('proj-client').value,pe=$('proj-engineer').value,pd=$('proj-date').value;
+    if(pn)p.set('pn',pn);if(pnum)p.set('pnum',pnum);if(pc)p.set('pc',pc);if(pe)p.set('pe',pe);if(pd)p.set('pd',pd);const pnotes=$('proj-notes').value;if(pnotes)p.set('pnotes',pnotes);
+    try{return location.origin+location.pathname+'?'+p.toString()}catch(e){return '?'+p.toString()}
+  }
+  function loadFromUrl(){
+    try{
+      const p=new URLSearchParams(location.search);if(!p.has('c'))return;
+      $('curve').value=p.get('c')||'iec_si';$('is').value=p.get('is')||100;$('ifault').value=p.get('i')||500;$('tms-n').value=p.get('tms')||0.5;
+      if(p.get('dt')==='1'){$('dt-enable').checked=true;toggleDt();$('dt-pickup').value=p.get('dtp')||2000;$('dt-time').value=p.get('dtt')||0.1}
+      if(p.get('ov')==='1'){$('overlay-enable').checked=true;toggleOverlay();$('curve2').value=p.get('c2')||'iec_si';$('is2').value=p.get('is2')||200;$('tms2').value=p.get('tms2')||0.3;$('grading-margin').value=p.get('gm')||0.4}
+      if(p.has('ctp')&&p.has('cts')){$('ct-pri').value=p.get('ctp');$('ct-sec').value=p.get('cts')}
+      if(p.has('pn'))$('proj-name').value=p.get('pn');
+      if(p.has('pnum'))$('proj-number').value=p.get('pnum');
+      if(p.has('pc'))$('proj-client').value=p.get('pc');
+      if(p.has('pe'))$('proj-engineer').value=p.get('pe');
+      if(p.has('pd'))$('proj-date').value=p.get('pd');
+      if(p.has('pnotes'))$('proj-notes').value=p.get('pnotes');
+      updateTmsControls();
+    }catch(e){}
+  }
+
+  /* Share / Export / Reset */
+  function shareLink(){const url=getShareUrl();navigator.clipboard.writeText(url).then(()=>showToast('Link copied to clipboard')).catch(()=>showToast('Could not copy - use browser copy'))}
+  function exportResults(){
+    const key=$('curve').value,c=CURVES[key],Is=parseFloat($('is').value),I=parseFloat($('ifault').value),TMS=parseFloat($('tms-n').value);
+    const dtOn=$('dt-enable').checked,dtP=parseFloat($('dt-pickup').value)||0,dtT=parseFloat($('dt-time').value)||0;
+    const t=effectiveTrip(key,Is,I,TMS,dtOn,dtP,dtT),M=I/Is,tdL=c.std==='IEEE'?'TD':'TMS';
+    let txt=`IDMT Relay Trip Time Calculation\n================================\nCurve:          ${c.name}\nPickup (Is):    ${Is} A\nFault (I):      ${I} A\nMultiple (M):   ${M.toFixed(4)}\n${tdL}:            ${TMS}\n`;
+    if(dtOn&&dtP>0)txt+=`DT Pickup:      ${dtP} A\nDT Time:        ${dtT} s\n`;
+    txt+=`────────────────────────────────\nTrip Time:      ${t!==null?t.toFixed(4)+' s':'N/A'}\n`;
+    if($('overlay-enable').checked){
+      const k2=$('curve2').value,c2=CURVES[k2],Is2=parseFloat($('is2').value),T2=parseFloat($('tms2').value);
+      const t2=effectiveTrip(k2,Is2,I,T2,false,0,0),margin=parseFloat($('grading-margin').value)||0.4;
+      txt+=`\nRelay 2 Overlay\nCurve:          ${c2.name}\nPickup (Is):    ${Is2} A\n${c2.std==='IEEE'?'TD':'TMS'}:            ${T2}\nTrip Time:      ${t2!==null?t2.toFixed(4)+' s':'N/A'}\n`;
+      if(t!==null&&t2!==null){const d=Math.abs(t2-t);txt+=`\nGrading Margin: ${d.toFixed(3)}s (required: ${margin}s) — ${d>=margin?'OK (PASS)':'FAIL'}\n`}
+    }
+    txt+=`\nGenerated by SparkyCalc\n`;
+    navigator.clipboard.writeText(txt).then(()=>showToast('Results copied to clipboard')).catch(()=>showToast('Could not copy - use browser copy'));
+  }
+  function resetAll(){
+    $('curve').value='iec_si';$('is').value=100;$('ifault').value=500;$('tms-n').value=0.5;$('tms-r').value=0.5;
+    $('dt-enable').checked=false;$('dt-pickup').value=2000;$('dt-time').value=0.1;
+    $('overlay-enable').checked=false;$('curve2').value='iec_si';$('is2').value=200;$('tms2').value=0.3;$('grading-margin').value=0.4;
+    $('ct-pri').value='';$('ct-sec').value='';$('ct-hint').textContent='';
+    $('proj-name').value='';$('proj-number').value='';$('proj-client').value='';$('proj-engineer').value='';$('proj-date').value='';$('proj-notes').value='';
+    toggleDt();toggleOverlay();updateTmsControls();
+    document.querySelectorAll('.input-err').forEach(el=>el.classList.remove('input-err'));
+    try{history.replaceState(null,'',location.pathname)}catch(e){}
+    calc();
+  }
+  /* ── Print Report ── */
+  function printReport(){
+    const key=$('curve').value,c=CURVES[key];
+    const Is=parseFloat($('is').value),I=parseFloat($('ifault').value),TMS=parseFloat($('tms-n').value);
+    const dtOn=$('dt-enable').checked,dtP=parseFloat($('dt-pickup').value)||0,dtT=parseFloat($('dt-time').value)||0;
+    const t=effectiveTrip(key,Is,I,TMS,dtOn,dtP,dtT);
+    const idmtT=tripTime(key,Is,I,TMS);
+    if(t===null||isNaN(Is)||isNaN(I)||isNaN(TMS)){showToast('Cannot generate report — check inputs');return}
+    const M=I/Is,tdL=c.std==='IEEE'?'TD':'TMS';
+    const dtAct=dtOn&&dtP>0&&I>=dtP&&dtT<idmtT;
+    const projName=$('proj-name').value||'';
+    const projNum=$('proj-number').value||'';
+    const projClient=$('proj-client').value||'';
+    const projEngineer=$('proj-engineer').value||'';
+    const projNotes=$('proj-notes').value||'';
+    const projDateRaw=$('proj-date').value;
+    const projDate=projDateRaw?new Date(projDateRaw+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'}):new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
+
+    /* Build HTML/CSS chart from scratch — pure positioned divs */
+    function buildPrintChart(curveKey,curveIs,curveTMS,curveDtOn,curveDtP,curveDtT,faultI,color,label){
+      const W=700,H=320,PAD_L=65,PAD_B=48,PAD_T=12,PAD_R=12;
+      const cW=W-PAD_L-PAD_R,cH=H-PAD_T-PAD_B;
+      const Mfault=faultI/curveIs;
+      const Mmax=Math.max(30,Mfault*1.2);
+      /* Collect data points */
+      const pts=[];
+      for(let i=0;i<=300;i++){
+        const lm=Math.log10(1.01)+(Math.log10(Mmax)-Math.log10(1.01))*i/300;
+        const Mv=Math.pow(10,lm),If=Mv*curveIs;
+        const tv=effectiveTrip(curveKey,curveIs,If,curveTMS,curveDtOn,curveDtP,curveDtT);
+        if(tv!==null&&tv>0&&tv<1000)pts.push({x:If,y:tv});
+      }
+      if(!pts.length)return'';
+      const xMin=Math.log10(pts[0].x),xMax=Math.log10(pts[pts.length-1].x);
+      const allY=pts.map(p=>p.y);
+      const yMin=Math.log10(Math.max(0.01,Math.min(...allY)*0.8));
+      const yMax=Math.log10(Math.max(...allY)*1.2);
+      function px(v){return PAD_L+((Math.log10(v)-xMin)/(xMax-xMin))*cW}
+      function py(v){return PAD_T+cH-((Math.log10(v)-yMin)/(yMax-yMin))*cH}
+      /* Build SVG polyline path (simple, prints perfectly) */
+      const pathD=pts.map((p,i)=>`${i===0?'M':'L'}${px(p.x).toFixed(1)},${py(p.y).toFixed(1)}`).join(' ');
+      /* Grid lines */
+      const xTicks=[1,2,5,10,20,50,100,200,500,1000,2000,5000,10000].filter(v=>Math.log10(v)>=xMin&&Math.log10(v)<=xMax);
+      const yTicks=[0.01,0.02,0.05,0.1,0.2,0.5,1,2,5,10,20,50,100,200,500].filter(v=>Math.log10(v)>=yMin&&Math.log10(v)<=yMax);
+      let gridSvg='';
+      xTicks.forEach(v=>{const x=px(v);gridSvg+=`<line x1="${x}" y1="${PAD_T}" x2="${x}" y2="${PAD_T+cH}" stroke="#ddd" stroke-width="0.5"/><text x="${x}" y="${H-12}" text-anchor="middle" font-size="11" fill="#555" font-family="'DM Mono','Courier New',monospace">${v}</text>`});
+      yTicks.forEach(v=>{const y=py(v);gridSvg+=`<line x1="${PAD_L}" y1="${y}" x2="${PAD_L+cW}" y2="${y}" stroke="#ddd" stroke-width="0.5"/><text x="${PAD_L-8}" y="${y+4}" text-anchor="end" font-size="11" fill="#555" font-family="'DM Mono','Courier New',monospace">${v}s</text>`});
+      /* Operating point */
+      const fTv=effectiveTrip(curveKey,curveIs,faultI,curveTMS,curveDtOn,curveDtP,curveDtT);
+      let opSvg='';
+      if(fTv&&faultI>curveIs){
+        opSvg=`<circle cx="${px(faultI).toFixed(1)}" cy="${py(fTv).toFixed(1)}" r="5" fill="${color}" stroke="#fff" stroke-width="1.5"/>`;
+        opSvg+=`<text x="${(px(faultI)+10).toFixed(1)}" y="${(py(fTv)-10).toFixed(1)}" font-size="12" fill="${color}" font-weight="700" font-family="'DM Mono','Courier New',monospace">${fTv.toFixed(3)}s @ ${faultI}A</text>`;
+      }
+      /* Axis labels */
+      const xLabel=`<text x="${PAD_L+cW/2}" y="${H-2}" text-anchor="middle" font-size="12" fill="#333" font-weight="600" font-family="'Syne',Arial,sans-serif">Fault current (A)</text>`;
+      const yLabel=`<text x="14" y="${PAD_T+cH/2}" text-anchor="middle" font-size="12" fill="#333" font-weight="600" font-family="'Syne',Arial,sans-serif" transform="rotate(-90,14,${PAD_T+cH/2})">Trip time (s)</text>`;
+      return{svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="max-width:100%;height:auto;border:1px solid #ddd;border-radius:4px;background:#fafbfc">${gridSvg}<rect x="${PAD_L}" y="${PAD_T}" width="${cW}" height="${cH}" fill="none" stroke="#ccc" stroke-width="0.5"/><path d="${pathD}" fill="none" stroke="${color}" stroke-width="2"/>${opSvg}${xLabel}${yLabel}</svg>`,label};
+    }
+
+    /* Build chart(s) */
+    let chartHtml='';
+    const ch1=buildPrintChart(key,Is,TMS,dtOn,dtP,dtT,I,'#2563eb','Relay 1');
+    chartHtml+=ch1.svg;
+    let overlayInfo='';
+    if($('overlay-enable').checked){
+      const k2=$('curve2').value,c2=CURVES[k2],Is2=parseFloat($('is2').value)||100,T2=parseFloat($('tms2').value)||0.5;
+      const t2=effectiveTrip(k2,Is2,I,T2,false,0,0);
+      const ch2=buildPrintChart(k2,Is2,T2,false,0,0,I,'#7c3aed','Relay 2');
+      chartHtml+=`<div style="margin-top:16px">${ch2.svg}</div>`;
+      const margin=parseFloat($('grading-margin').value)||0.4;
+      if(t2!==null){
+        const diff=Math.abs(t2-t),pass=diff>=margin;
+        overlayInfo=`
+        <div style="margin-top:20px;border-top:2px solid #2bb5a0;padding-top:12px">
+          <h3 style="font-family:'Syne',Arial,sans-serif;font-size:13px;font-weight:700;color:#2bb5a0;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em">Relay 2 — Overlay Comparison</h3>
+          <table style="width:100%;border-collapse:collapse;font-size:12px">
+            <tr><td style="padding:5px 0;color:#666;width:40%">Curve</td><td style="padding:5px 0">${c2.name}</td></tr>
+            <tr><td style="padding:5px 0;color:#666">Pickup (Is)</td><td style="padding:5px 0">${Is2} A</td></tr>
+            <tr><td style="padding:5px 0;color:#666">${c2.std==='IEEE'?'TD':'TMS'}</td><td style="padding:5px 0">${T2}</td></tr>
+            <tr><td style="padding:5px 0;color:#666">Trip Time</td><td style="padding:5px 0">${t2.toFixed(4)} s</td></tr>
+          </table>
+          <div style="margin-top:12px;border-top:2px solid #2bb5a0;padding-top:12px">
+            <h3 style="font-family:'Syne',Arial,sans-serif;font-size:13px;font-weight:700;color:#2bb5a0;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em">Grading Margin Check</h3>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <tr><td style="padding:5px 0;color:#666;width:40%">Relay 1 Trip</td><td style="padding:5px 0">${t.toFixed(4)} s</td></tr>
+              <tr><td style="padding:5px 0;color:#666">Relay 2 Trip</td><td style="padding:5px 0">${t2.toFixed(4)} s</td></tr>
+              <tr><td style="padding:5px 0;color:#666">Actual Margin</td><td style="padding:5px 0">${diff.toFixed(4)} s</td></tr>
+              <tr><td style="padding:5px 0;color:#666">Required Margin</td><td style="padding:5px 0">${margin.toFixed(2)} s</td></tr>
+              <tr><td style="padding:5px 0;color:#666">Result</td><td style="padding:5px 0;font-weight:700;color:${pass?'#16a34a':'#dc2626'}">${pass?'PASS — Coordination OK':'FAIL — Insufficient margin'}</td></tr>
+            </table>
+          </div>
+        </div>`;
+      }
+    }
+
+    /* CT info */
+    const ctPri=parseFloat($('ct-pri').value),ctSec=parseFloat($('ct-sec').value);
+    const ctInfo=(ctPri>0&&ctSec>0)?`<tr><td style="padding:5px 0;color:#666">CT Ratio</td><td style="padding:5px 0">${ctPri}/${ctSec} (${(ctPri/ctSec).toFixed(1)}:1)</td></tr>`:'';
+
+    const html=`<!DOCTYPE html><html><head>
+    <meta charset="UTF-8"><title>IDMT Relay Trip Time Report — SparkyCalc</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      @page{size:A4 portrait;margin:20mm 18mm 25mm 18mm}
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:'DM Mono','Courier New',monospace;font-size:12px;color:#1a1a1a;line-height:1.6;background:#fff;padding:0}
+      .report{max-width:210mm;margin:0 auto;padding:20px}
+      .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #2bb5a0;padding-bottom:14px;margin-bottom:24px}
+      .header h1{font-family:'Syne',Arial,sans-serif;font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+      .header-sub{font-size:11px;color:#555}
+      .header-right{text-align:right;font-size:11px;color:#555}
+      .section-title{font-family:'Syne',Arial,sans-serif;font-size:13px;font-weight:700;color:#2bb5a0;border-bottom:2px solid #2bb5a0;padding-bottom:5px;margin:24px 0 14px;text-transform:uppercase;letter-spacing:0.05em}
+      .params-table{width:100%;border-collapse:collapse}
+      .params-table td{padding:6px 0;border-bottom:1px solid #e0e0e0;font-size:12px}
+      .params-table td:first-child{color:#555;width:40%}
+      .params-table td:last-child{color:#1a1a1a}
+      .result-box{background:#f0faf8;border:2px solid #2bb5a0;border-radius:6px;padding:16px 20px;margin:18px 0;display:flex;align-items:baseline;gap:14px}
+      .result-box .label{font-family:'Syne',Arial,sans-serif;font-size:12px;font-weight:700;color:#2bb5a0;text-transform:uppercase;letter-spacing:0.05em}
+      .result-box .value{font-size:28px;font-weight:700;color:#1a1a1a}
+      .result-box .unit{font-size:14px;color:#555;margin-left:3px}
+      .result-box .detail{font-size:11px;color:#555;margin-left:auto}
+      .steps-table{width:100%;border-collapse:collapse}
+      .steps-table td{padding:5px 0;border-bottom:1px solid #f0f0f0;font-size:12px}
+      .steps-table .val{color:#1a1a1a}
+      .steps-table .expr{color:#777;font-size:11px}
+      .chart-section{margin:18px 0}
+      .disclaimer{margin-top:28px;padding-top:14px;border-top:1px solid #ccc;font-size:10px;color:#888;line-height:1.5}
+      @media print{body{padding:0}.report{padding:0}@page{margin:15mm}}
+    </style></head><body>
+    <div class="report">
+      <div class="header">
+        <div><h1>IDMT Relay Trip Time Report</h1><div class="header-sub">Inverse Definite Minimum Time — Protection Relay Calculation</div></div>
+      </div>
+      ${(projName||projNum||projClient||projEngineer)?`
+      <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:12px">
+        ${projName?`<tr><td style="padding:4px 0;color:#555;width:35%">Project</td><td style="padding:4px 0">${projName}</td></tr>`:''}
+        ${projNum?`<tr><td style="padding:4px 0;color:#555">Project Number</td><td style="padding:4px 0">${projNum}</td></tr>`:''}
+        ${projClient?`<tr><td style="padding:4px 0;color:#555">Client</td><td style="padding:4px 0">${projClient}</td></tr>`:''}
+        ${projEngineer?`<tr><td style="padding:4px 0;color:#555">Engineer</td><td style="padding:4px 0">${projEngineer}</td></tr>`:''}
+        ${projNotes?`<tr><td style="padding:4px 0;color:#555">Notes</td><td style="padding:4px 0">${projNotes}</td></tr>`:''}
+        <tr><td style="padding:4px 0;color:#555">Date</td><td style="padding:4px 0">${projDate}</td></tr>
+      </table>`:`<div style="margin-bottom:20px;font-size:12px;color:#555">${projDate}</div>`}
+
+      <h2 class="section-title">Input Parameters</h2>
+      <table class="params-table">
+        <tr><td>Characteristic Curve</td><td>${c.name}</td></tr>
+        ${ctInfo}
+        <tr><td>Relay Pickup Current (Is)</td><td>${Is} A</td></tr>
+        <tr><td>Fault Current (I)</td><td>${I} A</td></tr>
+        <tr><td>Current Multiple (M)</td><td>${M.toFixed(4)}</td></tr>
+        <tr><td>${tdL}</td><td>${TMS}</td></tr>
+        ${dtOn?`<tr><td>DT Pickup</td><td>${dtP} A</td></tr><tr><td>DT Trip Time</td><td>${dtT} s</td></tr>`:''}
+      </table>
+
+      <div class="result-box">
+        <span class="label">Trip Time</span>
+        <span class="value">${t.toFixed(3)}<span class="unit">s</span></span>
+        <span class="detail">${c.name} · ${tdL} ${TMS.toFixed(2)}${dtAct?' · DT limited':''}</span>
+      </div>
+
+      <h2 class="section-title">Calculation Steps</h2>
+      <table class="steps-table">
+        <tr><td class="val">M = ${I} / ${Is} = ${M.toFixed(4)}</td></tr>
+        <tr><td class="expr">M = I / Is</td></tr>
+        <tr><td class="val">M<sup>p</sup> = ${M.toFixed(4)}<sup>${c.p}</sup> = ${Math.pow(M,c.p).toFixed(6)}</td></tr>
+        <tr><td class="val">M<sup>p</sup> - 1 = ${(Math.pow(M,c.p)-1).toFixed(6)}</td></tr>
+        ${c.std==='IEC'?
+          `<tr><td class="val">k / (M<sup>p</sup> - 1) = ${c.k} / ${(Math.pow(M,c.p)-1).toFixed(4)} = ${(c.k/(Math.pow(M,c.p)-1)).toFixed(6)}</td></tr>
+           <tr><td class="val">t = ${(c.k/(Math.pow(M,c.p)-1)).toFixed(6)} × ${TMS} = ${idmtT.toFixed(4)} s</td></tr>`:
+          `<tr><td class="val">A / (M<sup>p</sup> - 1) = ${c.A} / ${(Math.pow(M,c.p)-1).toFixed(4)} = ${(c.A/(Math.pow(M,c.p)-1)).toFixed(6)}</td></tr>
+           <tr><td class="val">+ B = ${(c.A/(Math.pow(M,c.p)-1)+c.B).toFixed(6)}</td></tr>
+           <tr><td class="val">t = ${(c.A/(Math.pow(M,c.p)-1)+c.B).toFixed(6)} × ${TMS} = ${idmtT.toFixed(4)} s</td></tr>`}
+        ${dtAct?`<tr><td class="val" style="color:#dc2626">DT high-set active (I ≥ ${dtP}A): t = ${dtT.toFixed(4)} s</td></tr>`:''}
+      </table>
+
+      <h2 class="section-title">Trip Time Curve</h2>
+      <div class="chart-section">${chartHtml}</div>
+
+      ${overlayInfo}
+
+      <div class="disclaimer">
+        This report is generated by SparkyCalc IDMT Relay Tripping Time Calculator. Calculations are based on IEC 60255 and IEEE C37.112 standard curve equations.
+        Results should be verified by a qualified protection engineer before use in protection coordination studies. Trip times do not include relay timing error, CT error, or circuit breaker operating time.
+      </div>
+    </div>
+    <script>document.fonts.ready.then(function(){setTimeout(function(){window.print()},300)})<\/script>
+    </body></html>`;
+
+    const w=window.open('','_blank');
+    if(w){w.document.write(html);w.document.close()}
+    else{showToast('Pop-up blocked — allow pop-ups for this site')}
+  }
+
+  function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+
+  /* Init */
+  loadFromUrl();updateTmsControls();calc();
+  </script>
+</body>
+</html>
